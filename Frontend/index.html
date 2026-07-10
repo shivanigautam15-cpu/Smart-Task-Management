@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- SCREEN 1: LOGIN & REGISTRATION -->
+    <main id="auth-screen" class="screen">
+        <div class="auth-card">
+            <h1 id="auth-title">Welcome Back</h1>
+            <p id="auth-subtitle">Login to manage your tasks effectively.</p>
+            
+            <form id="auth-form">
+                <div class="form-group register-only hidden">
+                    <label for="auth-name">Full Name</label>
+                    <input type="text" id="auth-name" placeholder="Bob">
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-email">Email Address</label>
+                    <input type="email" id="auth-email" required placeholder="name@company.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••">
+                </div>
+
+                <div class="form-group register-only hidden">
+                    <label for="auth-role">Organization Role</label>
+                    <select id="auth-role">
+                        <option value="standard">Standard Employee</option>
+                        <option value="admin">System Administrator</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="auth-submit-btn">Sign In</button>
+            </form>
+
+            <p class="auth-toggle">
+                <span id="toggle-text">Don't have an account?</span>
+                <a href="#" id="toggle-auth-btn">Create one</a>
+            </p>
+        </div>
+    </main>
+
+    <!-- SCREEN 2: TASK DASHBOARD -->
+    <main id="dashboard-screen" class="screen hidden">
+        <header class="app-header">
+            <div class="user-profile">
+                <h2>Hello, <span id="user-display-name">User</span>!</h2>
+                <span id="user-display-role" class="badge">Standard</span>
+            </div>
+            <div class="header-actions">
+                <button id="open-create-modal-btn" class="btn-primary">New Task</button>
+                <button id="logout-btn" class="btn-danger">Logout</button>
+            </div>
+        </header>
+
+        <section class="dashboard-content">
+            <div class="content-header">
+                <h3>Your Task Overview</h3>
+            </div>
+            
+            <div id="tasks-list" class="tasks-grid">
+                <!-- Injected dynamically -->
+            </div>
+            <div id="no-tasks-fallback" class="fallback-message hidden">
+                <p>No tasks found. Click "New Task" to begin your workflow.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- SCREEN 3: CREATE/EDIT MODAL OVERLAY -->
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-overlay" id="modal-close-overlay"></div>
+        <div class="modal-card">
+            <h3 id="modal-title">Create New Task</h3>
+            <form id="task-form">
+                <input type="hidden" id="task-id-field">
+                
+                <div class="form-group">
+                    <label for="task-title">Task Title</label>
+                    <input type="text" id="task-title" required placeholder="e.g., Fix Database Indexing">
+                </div>
+
+                <div class="form-group">
+                    <label for="task-desc">Description</label>
+                    <textarea id="task-desc" rows="4" placeholder="Detail the objectives of this task..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-status">Status</label>
+                        <select id="task-status">
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="close-modal-btn" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

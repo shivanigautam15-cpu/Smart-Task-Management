@@ -1,0 +1,284 @@
+/* --- Core Styles & Variables --- */
+:root {
+    --text-color: #333333;
+    --muted-color: #666666;
+    --border-color: #cccccc;
+    --primary-blue: #0066cc;
+    --primary-hover: #0052a3;
+    --danger-red: #cc0000;
+    --card-bg: #ffffff;
+    --page-bg: #f5f5f5;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--page-bg);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+/* --- Layout Utility --- */
+.screen {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Login & Registration Form --- */
+#auth-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 380px;
+}
+
+.auth-card h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.auth-card p {
+    color: var(--muted-color);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* --- Form Input Fields --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+    outline: 2px solid var(--primary-blue);
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* --- Buttons --- */
+button, .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid var(--border-color);
+    background: #f0f0f0;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e5e5e5;
+}
+
+#auth-submit-btn, .btn-primary {
+    background: var(--primary-blue);
+    color: #ffffff;
+    border: 1px solid var(--primary-blue);
+    width: 100%;
+    padding: 10px;
+}
+
+#auth-submit-btn:hover, .btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-danger {
+    background: var(--danger-red);
+    color: #ffffff;
+    border: 1px solid var(--danger-red);
+}
+
+.btn-danger:hover {
+    background: #a30000;
+}
+
+.auth-toggle {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.auth-toggle a {
+    color: var(--primary-blue);
+    text-decoration: underline;
+}
+
+/* --- Navigation Header --- */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 15px 20px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+
+.user-profile h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* --- Badges --- */
+.badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid var(--border-color);
+    background: #f9f9f9;
+}
+
+/* --- Dashboard Grid & Task Cards --- */
+.content-header h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.task-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.task-card h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.task-card p {
+    color: var(--muted-color);
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.task-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+}
+
+.task-actions button {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* Simple Status Color Codes */
+.status-completed { background: #e2f0d9; color: #385723; border-color: #385723; }
+.status-inprogress { background: #fff2cc; color: #7f6000; border-color: #7f6000; }
+.status-pending { background: #fce4d6; color: #c65911; border-color: #c65911; }
+
+/* --- Dialog Modals --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-card {
+    background: var(--card-bg);
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 450px;
+    z-index: 1001;
+}
+
+.modal-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.fallback-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted-color);
+    border: 1px dashed var(--border-color);
+    background: var(--card-bg);
+}
