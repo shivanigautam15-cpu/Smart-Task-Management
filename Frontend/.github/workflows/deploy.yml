@@ -52,11 +52,20 @@ jobs:
 
       # FOR FRONTEND REPOSITORY BUILD:
       - name: Build and Push Frontend Container (With Secrets Injection)
-        if: github.event.repository.name == 'Smart-Task-Management'
+        if: github.event.repository.name == 'Frontend'
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Smart-Task-Management:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Frontend:latest
           build-args: |
             REACT_APP_API_URL=http://${{ secrets.BACKEND_IP }}:5000
+
+                # FOR BACKEND REPOSITORY BUILD:
+      - name: Build and Push Backend Container
+        if: github.event.repository.name == 'Backend'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Backend:latest
