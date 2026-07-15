@@ -7,12 +7,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # --- JOB 1: VALIDATE BACKEND ---
-  validate-backend:
+  # --- JOB 1: VALIDATE Backend ---
+  validate-Backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./Backend
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -31,12 +31,12 @@ jobs:
       - name: Execute Test Suite
         run: npm test --if-present
 
-  # --- JOB 2: VALIDATE FRONTEND ---
-  validate-frontend:
+  # --- JOB 2: VALIDATE Frontend ---
+  validate-Frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./Frontend
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
 
   # --- JOB 3: BUILD AND SHIP DOCKER IMAGES ---
   build-and-ship:
-    needs: [validate-backend, validate-frontend]
+    needs: [validate-Backend, validate-Frontend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -73,22 +73,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # FRONTEND BUILD
+      # Frontend BUILD
       - name: Build and Push Frontend Container
         uses: docker/build-push-action@v7
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./Frontend
+          file: ./Frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Frontend:latest
           build-args: |
             REACT_APP_API_URL=http://${{ secrets.BACKEND_IP }}:5000
 
-      # BACKEND BUILD
+      # Backend BUILD
       - name: Build and Push Backend Container
         uses: docker/build-push-action@v7
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: ./Backend
+          file: ./Backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Backend:latest
