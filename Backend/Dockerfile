@@ -1,17 +1,12 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 WORKDIR /app
+
 COPY package*.json ./
-RUN npm install
+RUN npm install --omit=dev
+
 COPY . .
 
-# 1. Declare the ARG argument parameter
-ARG REACT_APP_API_URL
-# 2. Inject it into the environment scope during compilation
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV PORT=5000
+EXPOSE 5000
 
-RUN npm run build
-
-FROM nginx:1.25-alpine
-COPY --from=builder /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]

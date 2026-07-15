@@ -59,7 +59,7 @@ jobs:
   # --- JOB 3: BUILD AND SHIP DOCKER IMAGES ---
   build-and-ship:
     needs: [validate-backend, validate-frontend]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code

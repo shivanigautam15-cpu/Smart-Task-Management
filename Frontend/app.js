@@ -176,6 +176,8 @@ function openEditModal(id, title, desc, status, priority) {
     taskModal.classList.remove('hidden');
 }
 
+window.openEditModal = openEditModal;
+
 function closeModal() { taskModal.classList.add('hidden'); }
 document.getElementById('close-modal-btn').addEventListener('click', closeModal);
 document.getElementById('modal-close-overlay').addEventListener('click', closeModal);
@@ -215,7 +217,7 @@ taskForm.addEventListener('submit', async (e) => {
     }
 });
 
-async function executeDeleteTask(id) {
+window.executeDeleteTask = async function executeDeleteTask(id) {
     if (!confirm('Are you certain you wish to purge this task?')) return;
     try {
         const response = await fetch(`${API_BASE}/tasks/${id}`, {
@@ -230,7 +232,7 @@ async function executeDeleteTask(id) {
     } catch (err) {
         alert(err.message);
     }
-}
+};
 
 function escapeHTML(str) {
     if (!str) return '';
