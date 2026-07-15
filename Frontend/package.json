@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    
+    "build": "mkdir -p public && cp index.html public/ && cp app.js public/ && cp *.css dist/ 2>/dev/null || true",
+    "test": "echo \"No tests configured yet\" && exit 0",
+    "lint": "echo \"No linter configured yet\" && exit 0"
   },
   "keywords": [],
   "author": "",
