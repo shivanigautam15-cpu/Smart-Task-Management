@@ -12,20 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend # Forces commands to run inside /backend
+        working-directory: ./backend
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js Runtime Environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './backend/package-lock.json' # Fixes the missing lockfile error
+          node-version: 24 # Upgraded to the latest production-standard LTS release
 
       - name: Install Application Dependencies
-        run: npm ci || npm install
+        run: npm install # Dynamically resolves packages inside the subdirectory
 
       - name: Lint Verification Run
         run: npm run lint --if-present
@@ -38,20 +36,18 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend # Forces commands to run inside /frontend
+        working-directory: ./frontend
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js Runtime Environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './frontend/package-lock.json' # Fixes the missing lockfile error
+          node-version: 24
 
       - name: Install Application Dependencies
-        run: npm ci || npm install
+        run: npm install
 
       - name: Lint Verification Run
         run: npm run lint --if-present
@@ -61,7 +57,7 @@ jobs:
 
   # --- JOB 3: BUILD AND SHIP DOCKER IMAGES ---
   build-and-ship:
-    needs: [validate-backend, validate-frontend] # Only runs if BOTH subfolders pass testing
+    needs: [validate-backend, validate-frontend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -77,22 +73,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # FRONTEND BUILD (Uses context: ./frontend)
+      # FRONTEND BUILD
       - name: Build and Push Frontend Container
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
-          context: ./frontend # Points Docker to the frontend folder
-          file: ./frontend/Dockerfile # Points to frontend Dockerfile
+          context: ./frontend
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
           build-args: |
             REACT_APP_API_URL=http://${{ secrets.BACKEND_IP }}:5000
 
-      # BACKEND BUILD (Uses context: ./backend)
+      # BACKEND BUILD
       - name: Build and Push Backend Container
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
-          context: ./backend # Points Docker to the backend folder
-          file: ./backend/Dockerfile # Points to backend Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
