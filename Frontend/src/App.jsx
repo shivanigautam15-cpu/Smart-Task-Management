@@ -1,121 +1,143 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useEffect, useState } from 'react'
 import './App.css'
+import { createTask, deleteTask, getTasks, loginUser, updateTask } from './api'
+import AuthPage from './pages/AuthPage'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(localStorage.getItem('token')))
+  const [tasks, setTasks] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTask, setEditingTask] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [userName, setUserName] = useState('User')
+
+  useEffect(() => {
+    if (!isLoggedIn) return
+
+    const loadTasks = async () => {
+      setIsLoading(true)
+      setErrorMessage('')
+      try {
+        const loadedTasks = await getTasks()
+        setTasks(
+          loadedTasks.map((task) => ({
+            ...task,
+            id: task._id,
+          })),
+        )
+      } catch (error) {
+        setErrorMessage(error.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadTasks()
+  }, [isLoggedIn])
+
+  const handleAuthSubmit = async (event, formData) => {
+    event.preventDefault()
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const response = await loginUser(formData)
+      localStorage.setItem('token', response.token)
+      localStorage.setItem('user', JSON.stringify(response.user))
+      setUserName(response.user?.name || 'User')
+      setIsLoggedIn(true)
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCreateTask = () => {
+    setEditingTask(null)
+    setIsModalOpen(true)
+  }
+
+  const handleEditTask = (task) => {
+    setEditingTask(task)
+    setIsModalOpen(true)
+  }
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId)
+      setTasks((currentTasks) => currentTasks.filter((task) => task.id !== taskId))
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
+  }
+
+  const handleToggleStatus = async (taskId) => {
+    const taskToUpdate = tasks.find((task) => task.id === taskId)
+    if (!taskToUpdate) return
+
+    const nextStatus = taskToUpdate.status === 'Completed' ? 'Pending' : 'Completed'
+
+    try {
+      const updatedTask = await updateTask(taskId, { ...taskToUpdate, status: nextStatus })
+      setTasks((currentTasks) =>
+        currentTasks.map((task) => (task.id === taskId ? { ...task, ...updatedTask, id: updatedTask._id } : task)),
+      )
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
+  }
+
+  const handleSaveTask = async (task) => {
+    try {
+      if (task.id && tasks.some((existingTask) => existingTask.id === task.id)) {
+        const updatedTask = await updateTask(task.id, task)
+        setTasks((currentTasks) =>
+          currentTasks.map((existingTask) =>
+            existingTask.id === task.id ? { ...existingTask, ...updatedTask, id: updatedTask._id } : existingTask,
+          ),
+        )
+      } else {
+        const createdTask = await createTask(task)
+        setTasks((currentTasks) => [{ ...createdTask, id: createdTask._id }, ...currentTasks])
+      }
+      setIsModalOpen(false)
+      setEditingTask(null)
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setIsLoggedIn(false)
+    setTasks([])
+    setErrorMessage('')
+  }
+
+  if (!isLoggedIn) {
+    return <AuthPage onSubmit={handleAuthSubmit} isLoading={isLoading} errorMessage={errorMessage} />
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <DashboardPage
+      tasks={tasks}
+      userName={userName}
+      onCreateTask={handleCreateTask}
+      onLogout={handleLogout}
+      onEditTask={handleEditTask}
+      onDeleteTask={handleDeleteTask}
+      onToggleStatus={handleToggleStatus}
+      isModalOpen={isModalOpen}
+      editingTask={editingTask}
+      onCloseModal={() => setIsModalOpen(false)}
+      onSaveTask={handleSaveTask}
+      isLoading={isLoading}
+      errorMessage={errorMessage}
+    />
   )
 }
 
